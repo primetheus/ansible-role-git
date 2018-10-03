@@ -14,8 +14,6 @@
       - zlib-devel
       - gcc
       - perl-ExtUtils-MakeMaker
-- debug:
-    msg: "Git Version: {{ git_version }}"
 
 ## Get the latest release from GitHub, if we chose
 ## to install the latest version
@@ -29,9 +27,6 @@
     git_version: "{{ git_versions_output.json[0].name }}"
     git_source_url: "https://api.github.com/repos/git/git/tarball/{{ git_versions_output.json[0].name }}"
   when: git_version == 'latest'
-
-- debug:
-    msg: "Git Version: {{ git_version }}"
 
 ## Create the folder we'll use to extract Git
 - name: Create extraction folder
