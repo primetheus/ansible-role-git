@@ -1,0 +1,6 @@
+---
+#git_version: 2.19.0
+git_version: latest
+# This URL will be overridden if we choose 'latest' as the version
+#git_source_url: "https://mirrors.edge.kernel.org/pub/software/scm/git/git-{{ git_version }}.tar.gz"
+git_source_url: "https://api.github.com/repos/git/git/tarball/v{{ git_version }}"
