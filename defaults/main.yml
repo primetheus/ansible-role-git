@@ -1,0 +1,4 @@
+---
+git_version: latest
+git_source_url: "https://api.github.com/repos/git/git/tarball/v{{ git_version }}"
+git_install_dir: /usr/local/git
