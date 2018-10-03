@@ -1,0 +1,68 @@
+---
+## Install the build dependencies
+- name: Install dependencies
+  become: true
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - curl-devel
+      - expat-devel
+      - gettext-devel
+      - openssl-devel
+      - zlib-devel
+      - gcc
+      - perl-ExtUtils-MakeMaker
+- debug:
+    msg: "Git Version: {{ git_version }}"
+
+## Get the latest release from GitHub, if we chose
+## to install the latest version
+- name: Get the latest version of Git
+  uri:
+    url: https://api.github.com/repos/git/git/tags
+  register: git_versions_output
+  when: git_version == 'latest'
+
+- set_fact:
+    git_version: "{{ git_versions_output.json[0].name }}"
+    git_source_url: "https://api.github.com/repos/git/git/tarball/{{ git_versions_output.json[0].name }}"
+  when: git_version == 'latest'
+
+- debug:
+    msg: "Git Version: {{ git_version }}"
+
+## Create the folder we'll use to extract Git
+- name: Create extraction folder
+  file:
+    path: "/tmp/git-{{ git_version }}"
+    state: directory
+    mode: 0755
+
+## Extract the Git source
+- name: Extract Git
+  unarchive:
+    src: "{{ git_source_url }}"
+    dest: "/tmp/git-{{ git_version }}"
+    remote_src: yes
+    # Don't create a first-level-folder
+    extra_opts: [--strip-components=1]
+
+## Build Git
+- name: Build Git from source
+  command: make prefix=/usr/local/git all
+  args:
+    chdir: "/tmp/git-{{ git_version }}"
+
+## Install Git
+- name: Install Git from source
+  command: make prefix=/usr/local/git install
+  args:
+    chdir: "/tmp/git-{{ git_version }}"
+
+## Configure the user environment to have the Git path
+- name: Configure environment
+  lineinfile:
+    path: /etc/bashrc
+    line: export PATH=/usr/local/git/bin:$PATH
