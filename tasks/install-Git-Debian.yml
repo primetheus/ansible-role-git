@@ -66,6 +66,7 @@
 
 ## Configure the user environment to have the Git path
 - name: Configure environment
+  become: true
   lineinfile:
     path: /etc/bash.bashrc
     line: "export PATH={{ git_install_dir }}/bin:$PATH"
