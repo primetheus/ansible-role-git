@@ -46,18 +46,20 @@
 
 ## Build Git
 - name: Build Git from source
-  command: make prefix=/usr/local/git all
+  command: "make prefix={{ git_install_dir }} all"
   args:
     chdir: "/tmp/git-{{ git_version }}"
 
 ## Install Git
 - name: Install Git from source
-  command: make prefix=/usr/local/git install
+  become: true
+  command: "make prefix={{ git_install_dir }} install"
   args:
     chdir: "/tmp/git-{{ git_version }}"
 
 ## Configure the user environment to have the Git path
 - name: Configure environment
+  become: true
   lineinfile:
     path: /etc/bashrc
-    line: export PATH=/usr/local/git/bin:$PATH
+    line: "export PATH={{ git_install_dir }}/bin:$PATH"
