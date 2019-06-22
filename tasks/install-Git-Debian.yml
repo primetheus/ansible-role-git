@@ -13,6 +13,7 @@
       - gettext
       - zlib1g-dev
       - gcc
+  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Create the folder we'll use to extract Git
 - name: Create extraction folder
@@ -20,6 +21,7 @@
     path: "/tmp/git-{{ git_version }}"
     state: directory
     mode: 0755
+  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Extract the Git source
 - name: Extract Git
@@ -29,6 +31,7 @@
     remote_src: yes
     # Don't create a first-level-folder
     extra_opts: [--strip-components=1]
+  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Build Git
 - name: Build Git from source
