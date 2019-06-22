@@ -21,6 +21,7 @@
     url: https://api.github.com/repos/git/git/tags
   register: git_versions_output
   when: git_version == 'latest'
+  changed_when: false
 
 - set_fact:
     git_version: "{{ git_versions_output.json[0].name }}"
@@ -49,11 +50,13 @@
   args:
     chdir: "/tmp/git-{{ git_version }}"
 
-- command: "./configure --prefix={{ git_install_dir }} --without-tcltk"
+- name: Configure source
+  command: "./configure --prefix={{ git_install_dir }} --without-tcltk"
   args:
     chdir: "/tmp/git-{{ git_version }}"
 
-- command: make all
+- name: Run make
+  command: make all
   args:
     chdir: "/tmp/git-{{ git_version }}"
 
