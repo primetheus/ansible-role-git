@@ -14,7 +14,6 @@
       - zlib-devel
       - gcc
       - perl-ExtUtils-MakeMaker
-  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Create the folder we'll use to extract Git
 - name: Create extraction folder
@@ -22,7 +21,6 @@
     path: "/tmp/git-{{ git_version }}"
     state: directory
     mode: 0755
-  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Extract the Git source
 - name: Extract Git
@@ -32,14 +30,13 @@
     remote_src: yes
     # Don't create a first-level-folder
     extra_opts: [--strip-components=1]
-  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Build Git
 - name: Build Git from source
   command: "make prefix={{ git_install_dir }} all"
   args:
     chdir: "/tmp/git-{{ git_version }}"
-  when: installed_git_version.stdout.split()[2] != git_version
+  when: installed_git_version != git_version
 
 ## Install Git
 - name: Install Git from source
@@ -47,7 +44,7 @@
   command: "make prefix={{ git_install_dir }} install"
   args:
     chdir: "/tmp/git-{{ git_version }}"
-  when: installed_git_version.stdout.split()[2] != git_version
+  when: installed_git_version != git_version
 
 ## Configure the user environment to have the Git path
 - name: Configure environment
@@ -55,4 +52,4 @@
   lineinfile:
     path: /etc/bashrc
     line: "export PATH={{ git_install_dir }}/bin:$PATH"
-  when: installed_git_version.stdout.split()[2] != git_version
+  when: installed_git_version != git_version
