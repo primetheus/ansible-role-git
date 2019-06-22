@@ -22,6 +22,7 @@
     url: https://api.github.com/repos/git/git/tags
   register: git_versions_output
   when: git_version == 'latest'
+  changed_when: false
 
 - set_fact:
     git_version: "{{ git_versions_output.json[0].name }}"
