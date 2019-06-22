@@ -1,8 +1,20 @@
 ---
 - name: Get the currently installed version of Git
   command: git --version
-  register: installed_git_version
+  register: git_version_output
   changed_when: false
+
+- name: Set installed version fact for latest match
+  set_fact:
+    installed_git_version: "v{{ git_version_output.stdout.split()[2] }}"
+  changed_when: false
+  when: git_version == 'latest'
+
+- name: Set installed version fact for non-latest match
+  set_fact:
+    installed_git_version: "{{ git_version_output.stdout.split()[2] }}"
+  changed_when: false
+  when: git_version != 'latest'
 
 - name: Get the latest version of Git
   uri:
@@ -21,3 +33,4 @@
   include_vars: "{{ ansible_os_family }}.yml"
 
 - include_tasks: "install-Git-{{ ansible_os_family }}.yml"
+  when: installed_git_version != git_version
