@@ -14,21 +14,6 @@
       - zlib1g-dev
       - gcc
 
-## Get the latest release from GitHub, if we chose
-## to install the latest version
-- name: Get the latest version of Git
-  uri:
-    url: https://api.github.com/repos/git/git/tags
-  register: git_versions_output
-  when: git_version == 'latest'
-  changed_when: false
-
-- name: Update the URL to the latest version
-  set_fact:
-    git_version: "{{ git_versions_output.json[0].name }}"
-    git_source_url: "https://api.github.com/repos/git/git/tarball/{{ git_versions_output.json[0].name }}"
-  when: git_version == 'latest'
-
 ## Create the folder we'll use to extract Git
 - name: Create extraction folder
   file:
@@ -50,16 +35,19 @@
   command: make configure
   args:
     chdir: "/tmp/git-{{ git_version }}"
+  when: installed_git_version.stdout.split()[2] != git_version
 
 - name: Configure source
   command: "./configure --prefix={{ git_install_dir }} --without-tcltk"
   args:
     chdir: "/tmp/git-{{ git_version }}"
+  when: installed_git_version.stdout.split()[2] != git_version
 
 - name: Run make
   command: make all
   args:
     chdir: "/tmp/git-{{ git_version }}"
+  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Install Git
 - name: Install Git from source
@@ -67,6 +55,7 @@
   command: make install
   args:
     chdir: "/tmp/git-{{ git_version }}"
+  when: installed_git_version.stdout.split()[2] != git_version
 
 ## Configure the user environment to have the Git path
 - name: Configure environment
@@ -74,3 +63,4 @@
   lineinfile:
     path: /etc/bash.bashrc
     line: "export PATH={{ git_install_dir }}/bin:$PATH"
+  when: installed_git_version.stdout.split()[2] != git_version
