@@ -4,7 +4,6 @@ dependencies: {}
 galaxy_info:
   author: primetheus
   description: Git-SCM
-  company: "GitHub, Inc"
   license: "license (BSD, MIT)"
   min_ansible_version: 2.4
   platforms:
