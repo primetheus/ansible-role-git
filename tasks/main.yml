@@ -1,4 +1,22 @@
 ---
+- name: Get the currently installed version of Git
+  command: git --version
+  register: installed_git_version
+  changed_when: false
+
+- name: Get the latest version of Git
+  uri:
+    url: https://api.github.com/repos/git/git/tags
+  register: git_versions_output
+  when: git_version == 'latest'
+  changed_when: false
+
+- name: Update the URL to the latest version
+  set_fact:
+    git_version: "{{ git_versions_output.json[0].name }}"
+    git_source_url: "https://api.github.com/repos/git/git/tarball/{{ git_versions_output.json[0].name }}"
+  when: git_version == 'latest'
+
 - name: Include OS-Specific variables
   include_vars: "{{ ansible_os_family }}.yml"
 
