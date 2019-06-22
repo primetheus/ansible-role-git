@@ -24,7 +24,8 @@
   when: git_version == 'latest'
   changed_when: false
 
-- set_fact:
+- name: Update URL to the latest version
+  set_fact:
     git_version: "{{ git_versions_output.json[0].name }}"
     git_source_url: "https://api.github.com/repos/git/git/tarball/{{ git_versions_output.json[0].name }}"
   when: git_version == 'latest'
